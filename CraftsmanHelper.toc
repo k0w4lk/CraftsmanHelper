@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: CraftsmanHelper
+## Author: kowalk
+## Version: 1.0.0
+## LoadOnDemand: 1
+## LoadWith: Blizzard_TradeSkillUI
+## SavedVariables: AbyssCrystal, GreaterCosmicEssence, InfiniteDust, DreamShard
+
+CraftsmanHelper.lua
