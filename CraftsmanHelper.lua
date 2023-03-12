@@ -1,10 +1,3 @@
-CMH = {};
-
-CMH["Кристалл пропасти"] = AbyssCrystal or 520000
-CMH["Осколок грез"] = DreamShard or 690000
-CMH["Великая космическая субстанция"] = GreaterCosmicEssence or 70000
-CMH["Абсолютная пыль"] = InfiniteDust or 40000
-
 local Conf = {
     width = 68,
     height = 18,
@@ -12,9 +5,10 @@ local Conf = {
     y = -14
 }
 
-local addonNameForChat = "|cffffff00CraftsmanHelper:|r";
+local auctionatorRealmName = GetRealmName() .. "_" .. UnitFactionGroup("player")
 
-local Core = CreateFrame("Frame", "CoreFrame", TradeSkillFrame)
+local addonNameForChat = "|cffffff00CraftsmanHelper:|r"
+
 local GetPriceButton = CreateFrame("Button", "GetPriceButton", TradeSkillFrame, "UIPanelButtonTemplate")
 
 GetPriceButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", Conf.x, Conf.y)
@@ -37,14 +31,8 @@ GetPriceButton:SetScript(
 
 GetPriceButton:RegisterEvent("PLAYER_LOGIN")
 
-SLASH_CRAFT1 = "/ch"
-
-SlashCmdList["CRAFT"] = function()
-    print("Price is ...")
-end
-
 function GetPriceButton:PLAYER_LOGIN()
-    print("Craftsman loaded")
+    print("CraftsmanHelper loaded")
 end
 
 function CalcPrice()
@@ -54,14 +42,15 @@ function CalcPrice()
     local sum = 0
     for i = 1, numReagents, 1 do
         local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i)
-        if(not CMH[reagentName]) then
-        print(addonNameForChat, 'No price for:', reagentName)
-        do return end
+        if (not AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]) then
+            print(addonNameForChat, "No price for:", reagentName)
+            do
+                return
+            end
         end
-        sum = sum + reagentCount * CMH[reagentName];
+        sum = sum + reagentCount * AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]
     end
-    
+
     print(addonNameForChat, skillName)
-    print(addonNameForChat, GetCoinTextureString(math.floor(sum * 1.05)))
-   
+    print(addonNameForChat, GetCoinTextureString(sum))
 end

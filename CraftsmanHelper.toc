@@ -4,6 +4,6 @@
 ## Version: 1.0.0
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_TradeSkillUI
-## SavedVariables: AbyssCrystal, GreaterCosmicEssence, InfiniteDust, DreamShard
+## Dependencies: Auctionator
 
 CraftsmanHelper.lua
