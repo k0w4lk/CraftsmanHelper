@@ -9,11 +9,25 @@ local auctionatorRealmName = GetRealmName() .. "_" .. UnitFactionGroup("player")
 
 local addonNameForChat = "|cffffff00CraftsmanHelper:|r"
 
+local CMH = CreateFrame("Frame")
+
+CMH:SetScript(
+    "OnEvent",
+    function(self, event, ...)
+        return self[event](self, ...)
+    end
+)
+
+CMH:RegisterEvent("PLAYER_LOGIN")
+
+function CMH:PLAYER_LOGIN()
+    print("CraftsmanHelper loaded")
+end
+
 local GetPriceButton = CreateFrame("Button", "GetPriceButton", TradeSkillFrame, "UIPanelButtonTemplate")
 
-GetPriceButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", Conf.x, Conf.y)
 GetPriceButton:SetSize(Conf.width, Conf.height)
-GetPriceButton:SetText("Calc price")
+GetPriceButton:SetText("Узнать цену")
 GetPriceButton:RegisterForClicks("AnyUp")
 GetPriceButton:SetScript(
     "OnClick",
@@ -21,36 +35,24 @@ GetPriceButton:SetScript(
         CalcPrice()
     end
 )
-
-GetPriceButton:SetScript(
-    "OnEvent",
-    function(self, event, ...)
-        return self[event](self, ...)
-    end
-)
-
-GetPriceButton:RegisterEvent("PLAYER_LOGIN")
-
-function GetPriceButton:PLAYER_LOGIN()
-    print("CraftsmanHelper loaded")
-end
+GetPriceButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", Conf.x, Conf.y)
 
 function CalcPrice()
     id = GetTradeSkillSelectionIndex()
     skillName = GetTradeSkillInfo(id)
     numReagents = GetTradeSkillNumReagents(id)
     local sum = 0
+
+    print(addonNameForChat, skillName)
+
     for i = 1, numReagents, 1 do
         local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i)
         if (not AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]) then
             print(addonNameForChat, "No price for:", reagentName)
-            do
-                return
-            end
+        else
+            sum = sum + reagentCount * AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]
         end
-        sum = sum + reagentCount * AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]
     end
 
-    print(addonNameForChat, skillName)
     print(addonNameForChat, GetCoinTextureString(sum))
 end
