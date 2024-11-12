@@ -8,19 +8,23 @@ local Conf = {
 local auctionatorRealmName = GetRealmName() .. "_" .. UnitFactionGroup("player")
 
 local addonNameForChat = "|cffffff00CraftsmanHelper:|r"
+local reagentForChat = "|c000affa0Reagent name:|r"
+local noPriceForChat = "|c00ffa0a0No price for:|r"
 
-local CMH = CreateFrame("Frame")
+local realmName = GetRealmName()
 
-CMH:SetScript(
+local CMH_TradeSkillButton = CreateFrame("Frame")
+
+CMH_TradeSkillButton:SetScript(
     "OnEvent",
     function(self, event, ...)
         return self[event](self, ...)
     end
 )
 
-CMH:RegisterEvent("PLAYER_LOGIN")
+CMH_TradeSkillButton:RegisterEvent("PLAYER_LOGIN")
 
-function CMH:PLAYER_LOGIN()
+function CMH_TradeSkillButton:PLAYER_LOGIN()
     print("CraftsmanHelper loaded")
 end
 
@@ -48,9 +52,17 @@ function CalcPrice()
     for i = 1, numReagents, 1 do
         local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i)
         if (not AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]) then
-            print(addonNameForChat, "No price for:", reagentName)
+            if (ReagentsPrices[realmName][reagentName]) then
+                local reagentSum = reagentCount * ReagentsPrices[realmName][reagentName]
+                print(reagentForChat, reagentName,  "[x"..reagentCount.."]", GetCoinTextureString(reagentSum))
+                sum = sum + reagentSum
+            else
+                print(addonNameForChat, "No price for:", reagentName)
+            end
         else
-            sum = sum + reagentCount * AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]
+            local reagentSum = reagentCount * AUCTIONATOR_PRICE_DATABASE[auctionatorRealmName][reagentName]
+            print(reagentForChat, reagentName, "[x"..reagentCount.."]", GetCoinTextureString(reagentSum))
+            sum = sum + reagentSum
         end
     end
 
